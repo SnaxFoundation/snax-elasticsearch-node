@@ -1,0 +1,58 @@
+version: "3.7"
+
+networks:
+  snax:
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.5
+    container_name: elasticsearch
+    volumes:
+      - ./elastic:/usr/share/elasticsearch/data
+    environment:
+      - "discovery.type=single-node"
+      - bootstrap.memory_lock=true
+      - cluster.name=snax
+      - "ES_JAVA_OPTS=-Xmx4G -Xms4G"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - snax
+
+  snaxnode:
+    image: snaxfoundation/snax:1.0.1-elastic-fix
+    container_name: snaxnode
+    volumes:
+      - ./snaxnode:/opt/snax/data
+    networks:
+      - snax
+    depends_on:
+      - elasticsearch
+    command: "snaxnoded.sh --http-validate-host=false --elastic-url=http://elasticsearch:9200 --max-clients=0 --verbose-http-errors --network-version-match=1 --http-alias=snaxnode:8888 --replay-blockchain"
+
+  es-history-api:
+    image: snaxfoundation/es-history-api:master
+    container_name: es-history-api
+    environment:
+      ELASTIC_HOST: elasticsearch
+      HOST: 0.0.0.0
+      ELASTIC_PORT: 9200
+    networks:
+      - snax
+    depends_on:
+      - elasticsearch
+
+  caddy:
+    image: snaxfoundation/caddy:master
+    container_name: caddy
+    networks:
+      - snax
+    ports:
+      - 8888:8888
+    volumes:
+      - ./caddy:/root/.caddy
+    depends_on:
+      - snaxnode
+      - es-history-api

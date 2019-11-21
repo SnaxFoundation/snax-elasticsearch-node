@@ -1,0 +1,11 @@
+:8888 {
+  gzip
+  tls off
+  proxy /v1/history es-history-api:3000 {
+    transparent
+  }
+  proxy / snaxnode:8888 {
+    transparent
+  }
+  errors stderr
+}
