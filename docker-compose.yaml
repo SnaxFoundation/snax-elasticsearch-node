@@ -7,8 +7,9 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.8.5
     container_name: elasticsearch
+    restart: always
     volumes:
-      - ./elastic:/usr/share/elasticsearch/data
+      - ./elasticsearch:/usr/share/elasticsearch/data
     environment:
       - "discovery.type=single-node"
       - bootstrap.memory_lock=true
@@ -20,10 +21,13 @@ services:
         hard: -1
     networks:
       - snax
+    ports:
+      - "127.0.0.1:9200:9200"
 
   snaxnode:
     image: snaxfoundation/snax:1.0.1-elastic-fix
     container_name: snaxnode
+    restart: always
     volumes:
       - ./snaxnode:/opt/snax/data
     networks:
@@ -35,6 +39,7 @@ services:
   es-history-api:
     image: snaxfoundation/es-history-api:master
     container_name: es-history-api
+    restart: always
     environment:
       ELASTIC_HOST: elasticsearch
       HOST: 0.0.0.0
@@ -47,12 +52,13 @@ services:
   caddy:
     image: snaxfoundation/caddy:master
     container_name: caddy
+    restart: always
     networks:
       - snax
     ports:
       - 8888:8888
     volumes:
-      - ./caddy:/root/.caddy
+      - ./caddy:/etc/caddy
     depends_on:
       - snaxnode
       - es-history-api

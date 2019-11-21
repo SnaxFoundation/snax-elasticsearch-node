@@ -8,4 +8,12 @@ Deployment snax node with elasticsearch backend and elasticsearch history api us
 
 ## Run:
 
-`docker-compose up -d`
+`mkdir elasticsearch
+chmod g+rwx elasticsearch
+chgrp 1000 elasticsearch
+docker-compose up -d elasticsearch
+git clone https://github.com/SnaxFoundation/es-history-api.git
+cd es-history-api
+bash ./index-templates.sh --action create --dir ./templates --url http://localhost:9200
+cd ..
+docker-compose up -d`
