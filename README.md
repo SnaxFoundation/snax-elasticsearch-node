@@ -8,7 +8,7 @@ Deployment snax node with elasticsearch backend and elasticsearch history api us
 
 ## Run:
 
-```
+```bash
 mkdir elasticsearch
 chmod g+rwx elasticsearch
 chgrp 1000 elasticsearch
@@ -18,3 +18,10 @@ cd es-history-api
 bash ./index-templates.sh --action create --dir ./templates --url http://localhost:9200
 cd ..
 docker-compose up -d
+```
+
+## Check:
+
+```bash
+curl localhost:8888/v1/chain/get_info
+```
