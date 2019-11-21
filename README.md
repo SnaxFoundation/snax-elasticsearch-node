@@ -8,7 +8,8 @@ Deployment snax node with elasticsearch backend and elasticsearch history api us
 
 ## Run:
 
-```mkdir elasticsearch
+```
+mkdir elasticsearch
 chmod g+rwx elasticsearch
 chgrp 1000 elasticsearch
 docker-compose up -d elasticsearch
